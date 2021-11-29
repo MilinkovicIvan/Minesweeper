@@ -23,6 +23,8 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
 
     //used to link textview with customview
     private var totalMinesUpdate: TextView? = null
+    private var markedMinesCount = 0
+    private var markedMinesUpdate: TextView? = null
 
     //2d array used to store cell values, 0 for covered,1 for uncovered
     private var gridArray = Array(10, { IntArray(10) })
@@ -132,18 +134,19 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
                 //Log.i("TAG", x.toString() + " x")
                 //Log.i("TAG", y.toString() + " y")
 
-                //mine count
-                var mineCount = checkMineAmount(mineArray)
-                //update total mines value
-                //totalMinesUpdate?.setText("Mines: " + mineCount.toString())
-                totalMinesUpdate?.setText("Mines: " + mode.toString())
-
                 // only if user click inside canvas gridArray will be updated
                 if((x < 1000 && y < 1000) && gameOk){
                     //uncover mode
                     if(mode){
-                        // changes cell from covered to uncovered
-                        gridArray[y/100][x/100] = 1
+                        //if cell is marked do nothing
+                        if(gridArray[y/100][x/100] == 2){
+                            //do nothing
+                        }
+                        else{
+                            // changes cell from covered to uncovered
+                            gridArray[y/100][x/100] = 1
+                        }
+
                     }
                     //marking mode
                     else{
@@ -154,21 +157,25 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
                         //if already marked then switch to uncovered
                         else if(gridArray[y/100][x/100] == 2){
                             gridArray[y/100][x/100] = 0
+                            markedMinesCount--
                         }
                         else{
                             // changes cell from covered to marked
                             gridArray[y/100][x/100] = 2
+                            markedMinesCount++
                         }
                     }
                     invalidate()
                 }
+                //mine count
+                var mineCount = checkMineAmount(mineArray)
+                //update total mines textview
+                totalMinesUpdate?.setText("Total mines: " + mineCount.toString())
+                //update marked mines textview
+                markedMinesUpdate?.setText("Marked mines: " + markedMinesCount.toString())
             }
         }
         return true
-    }
-    //function used to update totalMines textView
-    fun setTotalMines(totalMines: TextView?) {
-        totalMinesUpdate = totalMines
     }
 
     //function which will add 20 mines randomly to mineArray
@@ -251,6 +258,16 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
     //function that will change mode,triggered with button press
     fun changeMode(b: Boolean) {
         this.mode = b
+    }
+
+    //function used to update totalMines textView
+    fun setTotalMines(totalMines: TextView?) {
+        totalMinesUpdate = totalMines
+    }
+
+    //function used to update markedMines textView
+    fun setMarkedMines(markedMines: TextView?) {
+        markedMinesUpdate = markedMines
     }
 
 }

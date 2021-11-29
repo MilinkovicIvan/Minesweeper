@@ -9,6 +9,7 @@ import android.widget.TextView
 class MainActivity : AppCompatActivity() {
     private lateinit var minefieldView: MinefieldView
     private lateinit var totalMines: TextView
+    private lateinit var markedMines: TextView
     private lateinit var resetButton: Button
     private lateinit var changeMode: Button
 
@@ -22,10 +23,13 @@ class MainActivity : AppCompatActivity() {
 
         minefieldView = findViewById<MinefieldView>(R.id.minefieldView)
         totalMines = findViewById<TextView>(R.id.totalMines)
+        markedMines = findViewById<TextView>(R.id.markedMines)
         resetButton = findViewById<Button>(R.id.reset)
         changeMode = findViewById<Button>(R.id.changeMode)
 
+        //linking textviews with customview
         minefieldView.setTotalMines(totalMines)
+        minefieldView.setMarkedMines(markedMines)
 
         // adding functionality when user clicks reset button
         resetButton.setOnClickListener(object : View.OnClickListener {
