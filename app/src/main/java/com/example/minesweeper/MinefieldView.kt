@@ -1,5 +1,5 @@
 package com.example.minesweeper
-
+//Ivan Milinkovic, 2991905
 
 import android.content.Context
 import android.graphics.Canvas
@@ -12,7 +12,6 @@ import android.view.MotionEvent
 import android.widget.TextView
 import android.widget.Toast
 
-
 class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private val paint = Paint()
     private var size = 100f
@@ -23,7 +22,9 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
 
     //used to link textview with customview
     private var totalMinesUpdate: TextView? = null
+    //var below used to keep track of marked mines for textview, and both for win condition
     private var markedMinesCount = 0
+    private var uncoveredCellsCount = 0
     private var markedMinesUpdate: TextView? = null
 
     //2d array used to store cell values, 0 for covered,1 for uncovered
@@ -39,8 +40,6 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
     private var mode = true
 
 
-
-
     override fun onDraw(canvas: Canvas) {
         // call the super method to keep any drawing from the parent side.
         super.onDraw(canvas)
@@ -50,6 +49,10 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
 
     // function that will draw minefield in app
     private fun drawMinefield(canvas: Canvas) {
+        //check to see if win condition is there
+        if(uncoveredCellsCount + markedMinesCount == 80){
+            winCondition()
+        }
         //adding mines to field
         val mineCount = checkMineAmount(mineArray)
         if(mineCount == 0){
@@ -96,6 +99,14 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
                         paint.color= Color.LTGRAY
                         paint.style = Paint.Style.FILL
                         canvas.drawRect(5f + column * size, 5f + row * size, 95f + column * size, 95f + row * size, paint)
+
+                        //check how many neighbour cells have mine and add that nb to uncovered cell
+                        paint.color= Color.BLUE
+                        paint.textSize = 50f
+                        val nbOfMinesAround = checkMinesAround(column,row, mineArray)
+                        if(nbOfMinesAround>0){
+                            canvas.drawText(nbOfMinesAround.toString(),(5f + column * size)+35, (5f + row * size)+60, paint)
+                        }
                         column++
                     }
                 }
@@ -125,6 +136,78 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
         }
     }
 
+    private fun winCondition() {
+        this.gameOk = false
+        Toast.makeText(this.context, "You won! Reset to play again.", Toast.LENGTH_SHORT).show()
+    }
+
+    //function that will check how many mines are around specific cell,returns int amount
+    private fun checkMinesAround(column: Int, row: Int, mineArray: Array<IntArray>): Int {
+        var amount = 0
+
+        //row above check 3 positions
+        if((row-1 < 0 || column-1 < 0) || (row-1 > 9 || column-1 > 9)){
+            //skip,out of grid
+        }
+        else if(mineArray[row-1][column-1] == 1){
+            amount++
+        }
+
+        if((row-1 < 0 || column < 0) || (row-1 > 9 || column > 9) ){
+            //skip,out of grid
+        }
+        else if(mineArray[row-1][column] == 1){
+            amount++
+        }
+
+        if((row-1 < 0 || column+1 < 0) || (row-1 > 9 || column+1 > 9)){
+            //skip,out of grid
+        }
+        else if(mineArray[row-1][column+1] == 1){
+            amount++
+        }
+
+        //middle row check only left and right
+        if((row < 0 || column-1 < 0) || (row > 9 || column-1 > 9)){
+            //skip,out of grid
+        }
+        else if(mineArray[row][column-1] == 1){
+            amount++
+        }
+
+        if((row < 0 || column+1 < 0) || (row > 9 || column+1 > 9)){
+            //skip,out of grid
+        }
+        else if(mineArray[row][column+1] == 1){
+            amount++
+        }
+
+        //row bellow check 3 positions
+        if((row+1 < 0 || column-1 < 0) || (row+1 > 9 || column-1 > 9)){
+            //skip,out of grid
+        }
+        else if(mineArray[row+1][column-1] == 1){
+            amount++
+        }
+
+        if((row+1 < 0 || column < 0) || (row+1 > 9 || column > 9)){
+            //skip,out of grid
+        }
+        else if(mineArray[row+1][column] == 1){
+            amount++
+        }
+
+        if((row+1 < 0 || column+1 < 0) || (row+1 > 9 || column+1 > 9)){
+            //skip,out of grid
+        }
+        else if(mineArray[row+1][column+1] == 1){
+            amount++
+        }
+
+        return amount
+    }
+
+
     //function that will provide coordinates of user clicking on cells
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
@@ -145,8 +228,8 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
                         else{
                             // changes cell from covered to uncovered
                             gridArray[y/100][x/100] = 1
+                            uncoveredCellsCount++
                         }
-
                     }
                     //marking mode
                     else{
@@ -206,7 +289,6 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
                 // if value on grid is 1 that means mine found
                 if(arr[row][column] == 1) {
                     count++
-
                 }
                 column++
             }
@@ -256,6 +338,10 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
 
         //reset flag
         this.gameOk = true
+
+        //reset counts
+        this.markedMinesCount = 0
+        this.uncoveredCellsCount = 0
 
         invalidate()
     }

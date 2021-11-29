@@ -1,4 +1,5 @@
 package com.example.minesweeper
+//Ivan Milinkovic, 2991905
 
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
