@@ -33,6 +33,9 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
     //flag used to reset game
     private var gameOk = true
 
+    //flag to keep track of current mode,default uncover mode
+    private var mode = true
+
 
 
 
@@ -56,6 +59,7 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
         paint.style = Paint.Style.FILL
         canvas.drawRect(0f, 0f, 1000f, 1000f, paint)
 
+        //mine hit flag
         var mineHit = false
 
         var row = 0
@@ -93,7 +97,15 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
                         column++
                     }
                 }
-                // value is 0 and it covered cell will be drawn
+                //value is 2 and marked cell will be drawn
+                else if(gridArray[row][column] == 2) {
+                    //marked cell background
+                    paint.color= Color.YELLOW
+                    paint.style = Paint.Style.FILL
+                    canvas.drawRect(5f + column * size, 5f + row * size, 95f + column * size, 95f + row * size, paint)
+                    column++
+                }
+                // value is 0 and covered cell will be drawn
                 else{
                     //covered cell background
                     paint.color= Color.BLACK
@@ -123,12 +135,31 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
                 //mine count
                 var mineCount = checkMineAmount(mineArray)
                 //update total mines value
-                totalMinesUpdate?.setText("Mines: " + mineCount.toString())
+                //totalMinesUpdate?.setText("Mines: " + mineCount.toString())
+                totalMinesUpdate?.setText("Mines: " + mode.toString())
 
                 // only if user click inside canvas gridArray will be updated
                 if((x < 1000 && y < 1000) && gameOk){
-                    // changes cell from covered to uncovered
-                    gridArray[y/100][x/100] = 1
+                    //uncover mode
+                    if(mode){
+                        // changes cell from covered to uncovered
+                        gridArray[y/100][x/100] = 1
+                    }
+                    //marking mode
+                    else{
+                        //uncovered case,do nothing
+                        if(gridArray[y/100][x/100] == 1){
+                            //do nothing
+                        }
+                        //if already marked then switch to uncovered
+                        else if(gridArray[y/100][x/100] == 2){
+                            gridArray[y/100][x/100] = 0
+                        }
+                        else{
+                            // changes cell from covered to marked
+                            gridArray[y/100][x/100] = 2
+                        }
+                    }
                     invalidate()
                 }
             }
@@ -215,6 +246,11 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
         this.gameOk = true
 
         invalidate()
+    }
+
+    //function that will change mode,triggered with button press
+    fun changeMode(b: Boolean) {
+        this.mode = b
     }
 
 }
