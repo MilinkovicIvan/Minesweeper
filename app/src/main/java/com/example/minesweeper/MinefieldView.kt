@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.View
 import android.view.MotionEvent
 import android.widget.TextView
+import android.widget.Toast
 
 
 class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs) {
@@ -20,13 +21,17 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
     private var x = -1
     private var y = -1
 
+    //used to link textview with customview
     private var totalMinesUpdate: TextView? = null
 
     //2d array used to store cell values, 0 for covered,1 for uncovered
-    private val gridArray = Array(10, { IntArray(10) })
+    private var gridArray = Array(10, { IntArray(10) })
 
     //2d array used to store mines on field, 0 for no mine,1 for mine
-    private val mineArray = Array(10, { IntArray(10) })
+    private var mineArray = Array(10, { IntArray(10) })
+
+    //flag used to reset game
+    private var gameOk = true
 
 
 
@@ -41,7 +46,7 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
     // function that will draw minefield in app
     private fun drawMinefield(canvas: Canvas) {
         //adding mines to field
-        var mineCount = checkMineAmount(mineArray)
+        val mineCount = checkMineAmount(mineArray)
         if(mineCount == 0){
             addMines(mineArray)
         }
@@ -69,15 +74,16 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
                         canvas.drawRect(5f + column * size, 5f + row * size, 95f + column * size, 95f + row * size, paint)
                         paint.color= Color.BLACK
                         paint.textSize = 50f
-                        var text = "M"
+                        val text = "M"
                         canvas.drawText(text,(5f + column * size)+25, (5f + row * size)+60, paint)
                         column++
 
                         //flag to see if mine is hit,if true than reveal all mines
                         mineHit = true
-                        if (mineHit == true){
-                            revealMines(canvas)
-                        }
+                        //popup for user
+                        Toast.makeText(this.context, "Game Over! Reset to play again.", Toast.LENGTH_SHORT).show()
+                        //set reset flag
+                        this.gameOk = false
                     }
                     else{
                         //uncovered cell background
@@ -95,14 +101,11 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
                     canvas.drawRect(5f + column * size, 5f + row * size, 95f + column * size, 95f + row * size, paint)
                     column++
                 }
-
-
-
             }
             column = 0
             row++
         }
-
+        // reveal all mines if mine is hit
         if (mineHit == true){
             revealMines(canvas)
         }
@@ -123,7 +126,7 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
                 totalMinesUpdate?.setText("Mines: " + mineCount.toString())
 
                 // only if user click inside canvas gridArray will be updated
-                if(x < 1000 && y < 1000){
+                if((x < 1000 && y < 1000) && gameOk){
                     // changes cell from covered to uncovered
                     gridArray[y/100][x/100] = 1
                     invalidate()
@@ -138,7 +141,7 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
     }
 
     //function which will add 20 mines randomly to mineArray
-    fun addMines(arr: Array<IntArray>){
+    private fun addMines(arr: Array<IntArray>){
         var mineCount = 0
         for (i in 1..100000) {
             if (mineCount < 20){
@@ -153,7 +156,7 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
     }
 
     //function which will check how many mines are in array
-    fun checkMineAmount(arr: Array<IntArray>): Int {
+    private fun checkMineAmount(arr: Array<IntArray>): Int {
         var count = 0
 
         var row = 0
@@ -175,6 +178,7 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
         return count
     }
 
+    //function that reveals all mines on minefield
     fun revealMines(canvas: Canvas){
         var row = 0
         var column = 0
@@ -197,6 +201,20 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
             column = 0
             row++
         }
+    }
+
+    //function triggered with reset button
+    fun resetGame() {
+        //reset grid array
+        this.gridArray = Array(10, { IntArray(10) })
+
+        //reset mine array
+        this.mineArray = Array(10, { IntArray(10) })
+
+        //reset flag
+        this.gameOk = true
+
+        invalidate()
     }
 
 }
