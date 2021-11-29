@@ -241,6 +241,11 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
         }
     }
 
+    //function for game over
+    fun gameOver(){
+        this.gameOk = false
+    }
+
     //function triggered with reset button
     fun resetGame() {
         //reset grid array

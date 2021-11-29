@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Minesweeper</string>
+    <string name="timeFormat">%02d:%02d</string>
 </resources>

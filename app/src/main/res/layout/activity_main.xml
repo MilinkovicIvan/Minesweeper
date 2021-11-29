@@ -13,14 +13,25 @@
         android:layout_width="match_parent"
         android:layout_height="400dp"/>
 
+    <TextView
+        android:id="@+id/timer"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:text="03:00"
+        android:textColor="@color/black"
+        android:layout_below="@+id/minefieldView"/>
+
     <LinearLayout
-        android:paddingTop="50dp"
+        android:paddingTop="30dp"
         android:id="@+id/firstRow"
         android:layout_centerHorizontal="true"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/minefieldView">
+        android:layout_below="@+id/timer">
 
         <Button
             android:backgroundTint="@color/black"
@@ -52,15 +63,17 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@color/black"
             android:text="Total mines: 20"/>
         <TextView
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="40dp"
             android:layout_toEndOf="@id/totalMines"
             android:id="@+id/markedMines"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@color/black"
             android:text="Marked mines: 0"/>
     </LinearLayout>
 
