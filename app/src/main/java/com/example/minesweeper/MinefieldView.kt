@@ -343,6 +343,9 @@ class MinefieldView(context: Context, attrs: AttributeSet) : View(context, attrs
         this.markedMinesCount = 0
         this.uncoveredCellsCount = 0
 
+        //update marked mines textview
+        markedMinesUpdate?.setText("Marked mines: " + markedMinesCount.toString())
+
         invalidate()
     }
 
